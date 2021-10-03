@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<article class="media">
+    <figure class="media-left">
+      <p class="image is-64x64">
+          <a href="{{url_for('profile', dog_id=post['Name'])}}"><img src="{{url_for('static', filename=post['Picture'])}}"alt="Image"></a>
+      </figure>
+      </p>
+    </figure>
+    <div class="media-content" >
+      <div class="content">
+        <p>
+            <strong><a href="{{url_for('profile', dog_id=post['Name'])}}">{{post['Name']}}</a></strong> <small>@<a href="{{url_for('profile', dog_id=post['Name'])}}">{{post['Username']}}</a></small> <small>{{post['DateTime']}}</small>
+          <br>
+          {{post['Text']}}
+          <br>
+          <nav class="level is-mobile">
+            <div class="level-left">
+              <a class="level-item" aria-label="like">
+                  <span class="icon-text">
+                      <span class="icon is-small">
+                        <i class="fas fa-heart"></i>
+                      </span>
+                      <span>{{(post['Likes'] | count)}}</span>
+                    </span>
+              </a>
+              <a class="level-item" aria-label="like">
+                  <span class="icon-text">
+                      <span class="icon is-small">
+                        <i class="fas fa-comment"></i>
+                      </span>
+                      <span>{{(post['Comments'] | count)}}</span>
+                    </span>
+              </a>
+              
+            </div>
+          </nav>
+        </p>
+      </div>
+      
+      {% for comment in post['Comments'] %}
+      <article class="media">
+        <figure class="media-left">
+          <p class="image is-48x48">
+          <a href="{{url_for('profile', dog_id=comment['Name'])}}"><img src="{{url_for('static', filename=comment['Picture'])}}"alt="Image"></a>
+          </p>
+        </figure>
+        <div class="media-content">
+          <div class="content">
+            <p>
+            <strong><a href="{{url_for('profile', dog_id=comment['Name'])}}">{{comment['Name']}}</a></strong> <small>@{{comment['Username']}}</small> <small>{{comment['DateTime']}}</small>
+              <br>
+              {{comment['Text']}}
+              <br>
+            </p>
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </article>
+      <article class="media">
+        <div class="media-left">
+            <figure class="image is-64x64">
+            <a href="{{url_for('profile', dog_id='Freddie')}}"><img src="{{url_for('static', filename='freddie.jpg')}}"alt="Image"></a>
+            </figure>
+        </div>
+        <div class="media-content">
+            <div class="content">
+            <p>
+                <strong><a href="{{url_for('profile', dog_id=post['Name'])}}">{{post['Name']}}</a></strong> <small>@<a href="{{url_for('profile', dog_id=post['Name'])}}">{{post['Username']}}</a>/small>
+                <div class="field">
+                    <div class="control">
+                        <form>
+                        <textarea class="textarea" placeholder="New Comment" rows=3></textarea>
+                        </form>
+                    </div>
+            </div>
+            <div class="field is-grouped">
+                <div class="control">
+                    <button class="button is-link">Comment</button>
+                </div>
+            </div>
+            </p>
+        </div>
+    </article>        
+
+{% endblock %}

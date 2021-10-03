@@ -1,0 +1,70 @@
+ {% extends 'base.html' %}
+
+ {% block content %}
+ <title>DogChat - My Feed</title>
+ <div class="box">
+    <article class="media">
+      <div class="media-left">
+        <figure class="image is-64x64">
+          <a href="{{url_for('profile', dog_id=cus)}}"><img src= "{{url_for('static', filename = profilepic)}}"> </a>
+        </figure>
+      </div>
+      <div class="media-content">
+        <div class="content">
+          <p>
+            <strong><a href="{{url_for('profile', dog_id= cus)}}">{{name}}</a></strong> <small><a href="{{url_for('profile', dog_id= cus)}}">@{{cus}}</a></small>
+            <div class="field">
+                <div class="control">
+                    <form action="/create" method="POST">
+                  <textarea class="textarea" name="post-content" placeholder="New Message" rows=3></textarea>
+                  <br>
+                  <div class="field is-grouped">
+                    <div class="control">
+                      <button class="button is-link">Submit</button>
+                    </div>
+                    </div>
+                </form>
+                </div>
+              </div>
+
+          </p>
+        </div>
+      </div>
+    </article>
+  </div>
+  {%for dog in dogs %}
+<div class="box">
+    <article class="media">
+      <div class="media-left">
+        <figure class="image is-64x64">
+          <a href="{{url_for('profile', dog_id=dog['Handle'])}}"><img src= "{{url_for('static', filename = dog['Picture'])}}"> </a>
+        </figure>
+      </div>
+      <div class="media-content">
+        <div class="content">
+          <p>
+            <strong><a href="{{url_for('profile', dog_id=dog['Handle'])}}">{{dog['Name']}}</a></strong> <small><a href="{{url_for('profile', dog_id=dog['Handle'])}}">@{{dog['Handle']}}</a></small> <small>'DateTime'</small> &nbsp;&nbsp;&nbsp; {% if cus == dog['Handle'] %}<small>(<a style="color:red;" href="{{url_for('delete', post_id=dog['PostId'])}}">DELETE</a>)</small>{% endif %}
+            <br>
+            {{dog['Post']}}
+            </p>
+        </div>
+        <nav class="level is-mobile">
+          <div class="level-left">
+            <a class="level-item" aria-label="like">
+                <span class="icon-text">
+                    <span class="icon is-small">
+                      <i class="fas fa-heart"></i>
+                    </span>
+                    <span>
+                      {{dog['LikeCount']}}
+                    </span>
+                  </span>
+            </a>
+          </div>
+        </nav>
+      </div>
+    </article>
+  </div>
+  {%endfor%}
+
+ {% endblock %}
