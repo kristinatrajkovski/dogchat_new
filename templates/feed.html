@@ -1,12 +1,41 @@
  {% extends 'base.html' %}
-
  {% block content %}
+
+ <script
+ src="https://code.jquery.com/jquery-3.6.0.min.js"
+ integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+ crossorigin="anonymous"></script>
+
+ <script>
+   $('.like-button').ready(function() {
+    $('.like-button').click( 
+      function(){
+      
+      var post_id= parseInt($(this).attr('data-postid'))
+      var $link = $(this);
+      $.ajax({
+      url: '/like/' + post_id
+     }) .done(function(data){
+       var like_count = parseInt(data);
+       $link.find('.fa-heart').removeClass('far')
+       $link.find('.fa-heart').addClass('fas')
+       $link.find('.like-count').text(like_count)
+       
+
+     })
+     .fail(function(){
+       alert("error");
+     })
+    })
+  })
+ </script>
+
  <title>DogChat - My Feed</title>
  <div class="box">
     <article class="media">
       <div class="media-left">
         <figure class="image is-64x64">
-          <a href="{{url_for('profile', dog_id=cus)}}"><img src= "{{url_for('static', filename = profilepic)}}"> </a>
+          <a href="{{url_for('profile', dog_id=cus)}}"><img src= "{{url_for('static', filename = 'Melba.jpg')}}"> </a>
         </figure>
       </div>
       <div class="media-content">
@@ -50,21 +79,33 @@
         </div>
         <nav class="level is-mobile">
           <div class="level-left">
-            <a class="level-item" aria-label="like">
-                <span class="icon-text">
-                    <span class="icon is-small">
-                      <i class="fas fa-heart"></i>
-                    </span>
-                    <span>
-                      {{dog['LikeCount']}}
-                    </span>
-                  </span>
-            </a>
+                      {%if dog['CurrentDogLike'] %}
+                      <a class="level-item" aria-label="like" href="{{url_for('unlike', postid=dog['PostId'])}}">
+                        <span class="icon-text">
+                            <span class="icon is-small">
+                              <i class="fas fa-heart"></i>
+                             </span>
+                        </span>
+                        <span class = "like-count">
+                          {{dog['LikeCount']}}
+                        </span>
+                       </a>
+                      {% else %}
+                      <a class="like-button level-item" aria-label="like" data-postid="{{dog['PostId']}}" >
+                        <span class="icon-text">
+                            <span class="icon is-small">
+                             <i class="far fa-heart"></i>
+                            </span>
+                        </span>
+                        <span class = "like-count">
+                          {{dog['LikeCount']}}
+                        </span>
+                      </a>
+                      {% endif %}
           </div>
         </nav>
       </div>
     </article>
   </div>
   {%endfor%}
-
  {% endblock %}
