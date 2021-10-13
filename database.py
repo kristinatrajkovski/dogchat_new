@@ -9,8 +9,6 @@ def query(query_text, *param):
     column_names = []
     for column in cur.description:
         column_names.append(column[0])
-
-    print(column_names)
     rows = cur.fetchall()
 
     dicts= []
@@ -102,7 +100,29 @@ def like_count(post_id):
     conn = sqlite3.connect ('dogs.db')
     cur = conn.cursor()
     values= [post_id]
-    cur.execute("""SELECT COUNT(*) FROM likes WHERE PostId = ? """, values)
+    cur.execute("""SELECT COUNT(*) FROM likes WHERE PostId = ?""", values)
     for row in cur:
         return row[0]
+
+def is_liked(handle, post_id):
+    conn = sqlite3.connect ('dogs.db')
+    cur = conn.cursor()
+    values= [post_id, handle]
+    cur.execute("""SELECT COUNT(*) FROM likes WHERE PostId = ? AND Handle = ? """, values)
+    for row in cur:
+        return(row[0]>0)
     
+def toggle_like(handle, post_id):
+    if is_liked(handle, post_id):
+        action = 'unlike'
+        unlike_post(handle, post_id)
+    else:
+        action = 'like'
+        like_post(handle, post_id)
+    return {
+        'like_count' : like_count(post_id),
+        'action' : action
+    }
+
+def get_comments(post_id):
+    return query("""SELECT [Handle], [Text] FROM Comments WHERE PostId = ?""", post_id)

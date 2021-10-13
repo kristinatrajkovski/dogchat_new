@@ -1,10 +1,11 @@
 import flask 
+import json
 from flask import Flask, session, request, render_template, abort, redirect, url_for
 from flask_httpauth import HTTPBasicAuth
 from flask_login import LoginManager, login_user, login_required, current_user, AnonymousUserMixin, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
 import database
-from database import like_count, create_user, get_one_dog, like_post, unlike_post
+from database import get_comments, toggle_like, like_count, create_user, get_one_dog, like_post, unlike_post
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, TextAreaField, IntegerField
 from urllib.parse import urlparse, urljoin
@@ -146,15 +147,22 @@ def create():
 @login_required
 def like(postid):
     handle=current_user.username
-    like_post(handle, postid)
-    return str(like_count(postid))
+    like_result = toggle_like(handle, postid)
+    return json.dumps(like_result)
 
-@app.route('/unlike/<int:postid>')
+@app.route('/api/comments/<int:post_id>')
 @login_required
-def unlike(postid):
-    handle=current_user.username
-    unlike_post(handle, postid)
-    return redirect(url_for('feed'))
+def comments(post_id):
+    c= get_comments(post_id)
+    return json.dumps(c)
+
+
+# @app.route('/unlike/<int:postid>')
+# @login_required
+# def unlike(postid):
+#     handle=current_user.username
+#     unlike_post(handle, postid)
+#     return redirect(url_for('feed'))
 
 # @app.route("/logout")
 # def logout():

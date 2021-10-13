@@ -11,14 +11,21 @@
     $('.like-button').click( 
       function(){
       
-      var post_id= parseInt($(this).attr('data-postid'))
+      var post_id= parseInt($(this).closest('.post-box').attr('data-postid'))
       var $link = $(this);
       $.ajax({
       url: '/like/' + post_id
      }) .done(function(data){
-       var like_count = parseInt(data);
-       $link.find('.fa-heart').removeClass('far')
+       var like_info= JSON.parse(data);
+       var like_count = like_info['like_count'];
+       if (like_info['action'] === 'like'){
+        $link.find('.fa-heart').removeClass('far')
        $link.find('.fa-heart').addClass('fas')
+       }
+       else {
+        $link.find('.fa-heart').removeClass('fas')
+       $link.find('.fa-heart').addClass('far')
+       }
        $link.find('.like-count').text(like_count)
        
 
@@ -28,6 +35,37 @@
      })
     })
   })
+
+  $('.comment-button').ready(function() {
+    $('.comment-button').click(function(){
+      var post_id= parseInt($(this).closest('.post-box').attr('data-postid'))
+      var $comments = $(this).closest('.post-box').find('.comments')
+      $.ajax({
+      url: '/api/comments/' + post_id
+     }) .done(function(data){
+       $comments.html('');
+       var comments = JSON.parse(data);
+       console.log(comments)
+       if (comments) {
+         
+       for (var i=0; i < comments.length; i++) {
+         var handle = comments[i]['Handle'];
+         var text = comments[i]['Text'];
+            $comments.append(`<li><b>${handle}: </b> ${text}</li>`);
+       }}
+       else{
+         
+        $comments.append('<li>No comments yet!</li>');
+       }
+      }
+     )
+     .fail(function(){
+       alert("error");
+     })
+      
+})
+})
+
  </script>
 
  <title>DogChat - My Feed</title>
@@ -35,7 +73,7 @@
     <article class="media">
       <div class="media-left">
         <figure class="image is-64x64">
-          <a href="{{url_for('profile', dog_id=cus)}}"><img src= "{{url_for('static', filename = 'Melba.jpg')}}"> </a>
+          <a href="{{url_for('profile', dog_id=cus)}}"><img src= "{{url_for('static', filename = profilepic)}}"> </a>
         </figure>
       </div>
       <div class="media-content">
@@ -62,7 +100,7 @@
     </article>
   </div>
   {%for dog in dogs %}
-<div class="box">
+<div class="box post-box" data-postid="{{dog['PostId']}}">
     <article class="media">
       <div class="media-left">
         <figure class="image is-64x64">
@@ -80,7 +118,7 @@
         <nav class="level is-mobile">
           <div class="level-left">
                       {%if dog['CurrentDogLike'] %}
-                      <a class="level-item" aria-label="like" href="{{url_for('unlike', postid=dog['PostId'])}}">
+                      <a class="level-item like-button" aria-label="like">
                         <span class="icon-text">
                             <span class="icon is-small">
                               <i class="fas fa-heart"></i>
@@ -91,7 +129,7 @@
                         </span>
                        </a>
                       {% else %}
-                      <a class="like-button level-item" aria-label="like" data-postid="{{dog['PostId']}}" >
+                      <a class="like-button level-item" aria-label="like" >
                         <span class="icon-text">
                             <span class="icon is-small">
                              <i class="far fa-heart"></i>
@@ -102,10 +140,19 @@
                         </span>
                       </a>
                       {% endif %}
+                      <a class="level-item comment-button" aria-label="comment" >
+                        <span class="icon-text">
+                            <span class="icon is-small">
+                              <i class="fas fa-comment"></i>
+                            </span>
+                        </span>
+                      </a>
           </div>
         </nav>
       </div>
     </article>
+    <ul class="comments">
+    </ul>
   </div>
   {%endfor%}
  {% endblock %}
