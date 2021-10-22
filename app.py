@@ -10,7 +10,6 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, TextAreaField, IntegerField
 from urllib.parse import urlparse, urljoin
 
-#SENDGRID_API_KEY='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'" 
 app = Flask(__name__)
 auth = HTTPBasicAuth()
 login_manager = LoginManager()
